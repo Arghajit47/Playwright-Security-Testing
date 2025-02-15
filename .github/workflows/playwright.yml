@@ -32,7 +32,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y default-jre
-          wget https://github.com/zaproxy/zaproxy/releases/download/v2.13.0/ZAP_2.13.0_Linux.tar.gz
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz
           tar -xzf ZAP_2.13.0_Linux.tar.gz
           cd ZAP_2.13.0
           ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} &
