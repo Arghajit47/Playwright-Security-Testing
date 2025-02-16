@@ -18,7 +18,7 @@ test.describe("Airbnb Security Testing", () => {
   test.setTimeout(100_000); // 100 seconds
 
   test.beforeEach(async ({ page }) => {
-    await waitForZAP(); // Ensure ZAP is ready
+    // await waitForZAP(); // Ensure ZAP is ready
     zapClient = new ZapClient(zapOptions);
 
     const browser = await chromium.launch({
