@@ -20,8 +20,7 @@ jobs:
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         options: >-
-          --entrypoint zap.sh
-          -daemon -port 8080 -host 0.0.0.0 -config api.key=$ZAP_API_KEY
+          --entrypoint /bin/sh -c "zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.key=$ZAP_API_KEY"
 
     steps:
       # Checkout the repository
