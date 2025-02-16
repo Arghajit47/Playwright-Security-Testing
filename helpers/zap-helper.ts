@@ -25,7 +25,7 @@ export async function waitForZAP() {
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const response = await fetch("127.0.0.1:8080");
+      const response = await fetch("http://127.0.0.1:8080");
       if (response.ok) {
         isReady = true;
         break;

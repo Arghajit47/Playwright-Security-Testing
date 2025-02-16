@@ -3,7 +3,7 @@ import { test, chromium } from "@playwright/test";
 import { generateZAPReport, waitForZAP } from "../helpers/zap-helper";
 import ZapClient from "zaproxy";
 
-const proxyUrl = "http://localhost:8080";
+const proxyUrl = "http://127.0.0.1:8080";
 const zapOptions = {
   apiKey: process.env.ZAP_API_KEY,
   proxy: {
