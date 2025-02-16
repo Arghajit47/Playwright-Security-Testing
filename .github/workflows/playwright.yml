@@ -14,7 +14,7 @@ jobs:
 
     services:
       zap:
-        image: owasp/zap2docker-stable:2.16.0
+        image: zaproxy/zap-stable
         ports:
           - 8080:8080
         env:
