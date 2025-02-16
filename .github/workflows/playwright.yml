@@ -25,10 +25,10 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: |
-          npm ci
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
           
-
       # Start ZAP in daemon mode
       - name: Start ZAP
         run: |
