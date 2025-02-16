@@ -52,6 +52,12 @@ jobs:
               sleep 5
             fi
           done
+      
+      - name: Debug ZAP API
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+        run: |
+          curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}    
 
       # Run Playwright Security tests
       - name: Run Playwright Security tests
