@@ -20,7 +20,7 @@ jobs:
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         options: >-
-          --entrypoint /bin/sh -c "zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.key=$ZAP_API_KEY"
+          -c "zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.key=$ZAP_API_KEY"
 
     steps:
       # Checkout the repository
@@ -60,7 +60,7 @@ jobs:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: |
           curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}
-
+          curl -s http://localhost:8080/JSON/core/view/version/?apikey=${ZAP_API_KEY}
       # Run Playwright Security tests
       - name: Run Playwright Security tests
         env:
