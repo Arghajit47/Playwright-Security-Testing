@@ -12,16 +12,6 @@ jobs:
   security-test:
     runs-on: ubuntu-latest
 
-    services:
-      zap:
-        image: zaproxy/zap-stable
-        ports:
-          - 8080:8080
-        env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-        options: >-
-          -c "zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.key=$ZAP_API_KEY"
-
     steps:
       # Checkout the repository
       - name: Checkout code
@@ -36,10 +26,29 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: npm ci
-
-      # Install Playwright browsers
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
+      # Start ZAP in daemon mode
+      - name: Start ZAP
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}  
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.16.0/ZAP_2.16.0_Linux.tar.gz
+          tar -xzf ZAP_2.16.0_Linux.tar.gz
+          cd ZAP_2.16.0
+          ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} &
+          echo "ZAP started on port 8080"
+          sleep 10 # Add a delay to give ZAP time to initialize
+
+      # Debug ZAP API
+      - name: Debug ZAP API
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+        run: |
+          curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}
 
       # Wait for ZAP to be ready
       - name: Wait for ZAP to be ready
@@ -54,13 +63,6 @@ jobs:
             fi
           done
 
-      # Debug ZAP API
-      - name: Debug ZAP API
-        env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-        run: |
-          curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}
-          curl -s http://localhost:8080/JSON/core/view/version/?apikey=${ZAP_API_KEY}
       # Run Playwright Security tests
       - name: Run Playwright Security tests
         env:
