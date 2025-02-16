@@ -31,6 +31,8 @@ jobs:
 
       # Start ZAP in daemon mode
       - name: Start ZAP
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}  
         run: |
           sudo apt-get update
           sudo apt-get install -y default-jre
@@ -43,6 +45,8 @@ jobs:
 
       # Debug ZAP API
       - name: Debug ZAP API
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: |
           curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}
 
