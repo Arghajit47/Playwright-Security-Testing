@@ -56,7 +56,7 @@ jobs:
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
           ZAP_URL: "http://localhost:8080"
-        run: npx playwright security-test
+        run: npm run security-test
 
       # Upload ZAP report as an artifact
       - name: Upload ZAP report
