@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: ./Playwright-api-testing/security-report/
+          path: ./Playwright-security-testing/security-report/
           if-no-files-found: error
 
       # Optional: Upload Playwright test results
