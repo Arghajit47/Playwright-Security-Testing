@@ -7,7 +7,7 @@ export async function generateZAPReport(
   description: string,
   filename: any
 ) {
-  const reportPath = `./Playwright-security-testing/security-report/${filename}.html`;
+  const reportPath = `security-report/${filename}.html`;
 
   await zapClient.reports.generate(
     {
