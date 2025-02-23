@@ -17,10 +17,12 @@ let zapClient: ZapClient;
 test.describe("Airbnb Security Testing", () => {
   test.setTimeout(100_000); // 100 seconds
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeAll(async () => {
     await waitForZAP(); // Ensure ZAP is ready
     zapClient = new ZapClient(zapOptions);
+  });
 
+  test.beforeEach(async ({ page }) => {
     const browser = await chromium.launch({
       headless: true,
       proxy: { server: proxyUrl },
@@ -33,7 +35,12 @@ test.describe("Airbnb Security Testing", () => {
     await page.waitForTimeout(5000);
   });
 
+  test.afterEach(async ({ page }) => {
+    await page.close();
+  });
+
   test("Airbnb Homepage test", async ({ page }) => {
+    console.log("Running ZAP security test for the homepage...");
     await generateZAPReport(
       zapClient, // Pass the ZAP client instance
       "Home Page",
@@ -41,5 +48,6 @@ test.describe("Airbnb Security Testing", () => {
       "Home Page",
       "home"
     );
+    console.log("ZAP security test completed.");
   });
 });

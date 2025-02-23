@@ -1,4 +1,4 @@
-name: ZAP with Playwright Security Tests
+name: ZAP Security Tests
 
 on:
   push:
@@ -31,58 +31,31 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # Start ZAP in daemon mode
+      # Install Java (required for ZAP)
+      - name: Install Java
+        run: sudo apt-get update && sudo apt-get install -y default-jre
+
+      # Download and start ZAP
       - name: Start ZAP
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
           wget https://github.com/zaproxy/zaproxy/releases/download/v2.16.0/ZAP_2.16.0_Linux.tar.gz
           tar -xzf ZAP_2.16.0_Linux.tar.gz
           cd ZAP_2.16.0
-          chmod -R 777 . # Ensure directory is writable
-          ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} -config log.file=zap.log &
+          ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} &
           echo "ZAP started on port 8080"
-          sleep 30 # Increased sleep time to ensure ZAP initializes
-    
-      # Check if ZAP is running
-      - name: Check if ZAP is running
-        run: |
-          ps aux | grep zap
-          netstat -tuln | grep 8080
-    
-          
+          sleep 40 # Wait for ZAP to initialize
 
-      # Debug ZAP API
-      - name: Debug ZAP API
-        env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+      # Debug: Check if ZAP is running
+      - name: Check ZAP status
         run: |
           curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}
 
-      # Wait for ZAP to be ready
-      - name: Wait for ZAP to be ready
-        run: |
-          for i in {1..20}; do
-            if curl -s http://localhost:8080/ > /dev/null; then
-              echo "ZAP is ready!"
-              break
-            else
-              echo "Waiting for ZAP to start... (Attempt $i/20)"
-              sleep 5
-            fi
-              done
-
-      # Create ZAP report directory
-      - name: Create ZAP report directory
-        run: mkdir -p ./Playwright-api-testing/security-report/
-
-      # Run Playwright Security tests
-      - name: Run Playwright Security tests
+      # Run Playwright tests with ZAP as the proxy
+      - name: Run Playwright Security Tests
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-          ZAP_URL: "http://localhost:8080"
         run: npm run security-test
 
       # Upload ZAP report as an artifact
