@@ -26,13 +26,15 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: npm ci
+
+      # Install Playwright browsers
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
       # Start ZAP in daemon mode
       - name: Start ZAP
         env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}  
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: |
           sudo apt-get update
           sudo apt-get install -y default-jre
@@ -41,7 +43,11 @@ jobs:
           cd ZAP_2.16.0
           ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} &
           echo "ZAP started on port 8080"
-          sleep 10 # Add a delay to give ZAP time to initialize
+          sleep 30 # Increased sleep time to ensure ZAP initializes
+      
+      # Print ZAP logs to debug startup issues    
+      - name: Print ZAP logs
+        run: cat ZAP_2.16.0/zap.log    
 
       # Debug ZAP API
       - name: Debug ZAP API
@@ -59,9 +65,13 @@ jobs:
               break
             else
               echo "Waiting for ZAP to start... (Attempt $i/20)"
-              sleep 2
+              sleep 5
             fi
           done
+
+      # Create ZAP report directory
+      - name: Create ZAP report directory
+        run: mkdir -p ./Playwright-api-testing/security-report/
 
       # Run Playwright Security tests
       - name: Run Playwright Security tests
