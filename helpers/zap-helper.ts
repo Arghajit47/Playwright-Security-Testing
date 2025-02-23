@@ -1,8 +1,6 @@
-import path from "path";
-import fs from "fs";
 import ZapClient from "zaproxy";
 
-export function generateZAPReport(
+export async function generateZAPReport(
   zapClient: ZapClient,
   title: string,
   template: any,
@@ -11,20 +9,31 @@ export function generateZAPReport(
 ) {
   const reportPath = `./Playwright-security-testing/security-report/${filename}.html`;
 
-  zapClient.reports
-    .generate({
-      title: title + "- Security Report",
-      template: "traditional-html-plus",
-      description: "Security Scan Report for the- " + description + " Page",
-      reportfilename: reportPath, // Use the dynamically generated path
-      display: false,
-    })
-    .then(() => {
-      console.log(`Report generated successfully: ${reportPath}`);
-    })
-    .catch((err: any) => {
-      console.error(`Failed to generate report: ${err}`);
-    });
+  const maxRetries = 3;
+  const retryDelay = 5000; // 5 seconds
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      await zapClient.reports.generate(
+        {
+          title: title + "- Security Report",
+          template: "traditional-html-plus",
+          description: "Security Scan Report for the- " + description + " Page",
+          reportfilename: reportPath,
+          display: false,
+        },
+        { timeout: 60000 }
+      );
+      return;
+    } catch (err) {
+      console.error(`Attempt ${i + 1} failed: ${err}`);
+      if (i < maxRetries - 1) {
+        await new Promise((r) => setTimeout(r, retryDelay));
+      } else {
+        throw err;
+      }
+    }
+  }
 }
 
 export async function waitForZAP() {
