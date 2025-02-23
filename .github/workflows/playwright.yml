@@ -60,7 +60,7 @@ jobs:
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: npm run security-test
-        
+
       - name: List files in report directory
         run: ls -la security-report/
 
@@ -69,5 +69,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: security-report/
           if-no-files-found: ignore
