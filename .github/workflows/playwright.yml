@@ -52,17 +52,7 @@ jobs:
           ps aux | grep zap
           netstat -tuln | grep 8080
     
-      # Print ZAP logs to debug startup issues
-      - name: Print ZAP logs
-        run: |
-          if [ -f ZAP_2.16.0/zap.log ]; then
-            cat ZAP_2.16.0/zap.log
-          else
-            echo "ZAP log file not found. Searching for log file..."
-            find / -name "zap.log" 2>/dev/null
-          fi
-           cat ZAP_2.16.0/zap.log
-        continue-on-error: true       
+          
 
       # Debug ZAP API
       - name: Debug ZAP API
