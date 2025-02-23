@@ -58,13 +58,6 @@ jobs:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: npm run security-test
 
-      # Upload ZAP report as an artifact
-      - name: Upload ZAP report
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: security-report/
-          if-no-files-found: error
 
       # Optional: Upload Playwright test results
       - name: Upload Playwright test results
