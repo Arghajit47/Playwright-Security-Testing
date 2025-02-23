@@ -9,31 +9,16 @@ export async function generateZAPReport(
 ) {
   const reportPath = `./Playwright-security-testing/security-report/${filename}.html`;
 
-  const maxRetries = 3;
-  const retryDelay = 5000; // 5 seconds
-
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      await zapClient.reports.generate(
-        {
-          title: title + "- Security Report",
-          template: "traditional-html-plus",
-          description: "Security Scan Report for the- " + description + " Page",
-          reportfilename: reportPath,
-          display: false,
-        },
-        { timeout: 60000 }
-      );
-      return;
-    } catch (err) {
-      console.error(`Attempt ${i + 1} failed: ${err}`);
-      if (i < maxRetries - 1) {
-        await new Promise((r) => setTimeout(r, retryDelay));
-      } else {
-        throw err;
-      }
-    }
-  }
+  await zapClient.reports.generate(
+    {
+      title: title + "- Security Report",
+      template: "traditional-html-plus",
+      description: "Security Scan Report for the- " + description + " Page",
+      reportfilename: reportPath,
+      display: false,
+    },
+    { timeout: 60000 }
+  );
 }
 
 export async function waitForZAP() {

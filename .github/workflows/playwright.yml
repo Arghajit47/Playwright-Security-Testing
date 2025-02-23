@@ -52,12 +52,17 @@ jobs:
         run: |
           curl -s http://localhost:8080/JSON/core/view/version/?apikey=${{ secrets.ZAP_API_KEY }}
 
+      - name: Create report directory
+        run: mkdir -p security-report/    
+
       # Run Playwright tests with ZAP as the proxy
       - name: Run Playwright Security Tests
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
         run: npm run security-test
-
+        
+      - name: List files in report directory
+        run: ls -la security-report/
 
       # Optional: Upload Playwright test results
       - name: Upload Playwright test results
