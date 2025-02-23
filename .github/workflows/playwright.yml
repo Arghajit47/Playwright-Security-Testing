@@ -41,13 +41,28 @@ jobs:
           wget https://github.com/zaproxy/zaproxy/releases/download/v2.16.0/ZAP_2.16.0_Linux.tar.gz
           tar -xzf ZAP_2.16.0_Linux.tar.gz
           cd ZAP_2.16.0
-          ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} &
+          chmod -R 777 . # Ensure directory is writable
+          ./zap.sh -daemon -port 8080 -host 127.0.0.1 -config api.key=${{ secrets.ZAP_API_KEY }} -config log.file=zap.log &
           echo "ZAP started on port 8080"
           sleep 30 # Increased sleep time to ensure ZAP initializes
-      
-      # Print ZAP logs to debug startup issues    
+    
+      # Check if ZAP is running
+      - name: Check if ZAP is running
+        run: |
+          ps aux | grep zap
+          netstat -tuln | grep 8080
+    
+      # Print ZAP logs to debug startup issues
       - name: Print ZAP logs
-        run: cat ZAP_2.16.0/zap.log    
+        run: |
+          if [ -f ZAP_2.16.0/zap.log ]; then
+            cat ZAP_2.16.0/zap.log
+          else
+            echo "ZAP log file not found. Searching for log file..."
+            find / -name "zap.log" 2>/dev/null
+          fi
+           cat ZAP_2.16.0/zap.log
+        continue-on-error: true       
 
       # Debug ZAP API
       - name: Debug ZAP API
@@ -67,7 +82,7 @@ jobs:
               echo "Waiting for ZAP to start... (Attempt $i/20)"
               sleep 5
             fi
-          done
+              done
 
       # Create ZAP report directory
       - name: Create ZAP report directory
