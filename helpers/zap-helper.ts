@@ -1,3 +1,5 @@
+import path from "path";
+import fs from "fs";
 import ZapClient from "zaproxy";
 
 export async function generateZAPReport(
@@ -7,18 +9,35 @@ export async function generateZAPReport(
   description: string,
   filename: any
 ) {
-  const reportPath = `security-report/${filename}.html`;
+  // Define the report directory and path
+  const reportDir = path.join(__dirname, "reports");
+  const reportPath = path.join(reportDir, `${filename}.html`);
 
-  await zapClient.reports.generate(
-    {
-      title: title + "- Security Report",
-      template: "traditional-html-plus",
-      description: "Security Scan Report for the- " + description + " Page",
-      reportfilename: reportPath,
-      display: false,
-    },
-    { timeout: 60000 }
-  );
+  // Ensure the report directory exists
+  if (!fs.existsSync(reportDir)) {
+    fs.mkdirSync(reportDir, { recursive: true });
+  }
+
+  console.log(`🔍 Generating ZAP security report at: ${reportPath}`);
+
+  try {
+    // Generate the report
+    const response = await zapClient.reports.generate(
+      {
+        title: title + "- Security Report", // Required
+        template: template || "traditional-html-plus", // Required
+        description: "Security Scan Report for the- " + description + " Page", // Optional
+        reportFileName: `${filename}.html`, // Correct parameter name and value
+        reportDir: reportDir, // Correct parameter name and value
+        display: false, // Optional
+      },
+      { timeout: 60000 } // Timeout for the API call
+    );
+
+    console.log("✅ ZAP API Response:", response);
+  } catch (e) {
+    console.error("❌ Failed to generate ZAP report:", e);
+  }
 }
 
 export async function waitForZAP() {
