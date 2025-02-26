@@ -62,7 +62,7 @@ jobs:
         run: npm run security-test
 
       - name: List files in report directory
-        run: ls security-report/
+        run: ls /home/runner/
 
       # Optional: Upload Playwright test results
       - name: Upload Playwright test results
